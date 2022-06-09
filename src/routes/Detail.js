@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Nav } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 
@@ -9,6 +10,15 @@ const Detail = (props) => {
   const [isShowAd, setIsShowAd] = useState(true);
   const [value, setValue] = useState("");
   const [alert, setAlert] = useState(false);
+  const [tab, setTab] = useState(0);
+  const [fade2, setFade2] = useState("");
+
+  useEffect(() => {
+    setFade2("end");
+    return () => {
+      setFade2("");
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,13 +38,45 @@ const Detail = (props) => {
     }
   }, [value]);
 
+  // 방법1
+  // const TabContent = ({ tab }) => {
+  //   if (tab === 0) {
+  //     return <div>내용1</div>;
+  //   } else if (tab === 1) {
+  //     return <div>내용2</div>;
+  //   } else if (tab === 2) {
+  //     return <div>내용3</div>;
+  //   }
+  // };
+
+  // 방법2
+  // const TabContent = ({ tab }) => {
+  function TabContent({ tab }) {
+    let [fade, setFade] = useState("");
+
+    useEffect(() => {
+      setTimeout(() => {
+        setFade("end");
+      }, 100);
+      return () => {
+        setFade("");
+      };
+    }, [tab]);
+
+    return (
+      <div className={"start " + fade}>
+        {[<div>내용0</div>, <div>내용1</div>, <div>내용2</div>][tab]}
+      </div>
+    );
+  }
+
   const handleImgError = (e) => {
     e.target.src =
       "https://mblogthumb-phinf.pstatic.net/20160817_259/retspe_14714118890125sC2j_PNG/%C7%C7%C4%AB%C3%F2_%281%29.png?type=w800";
   };
 
   return (
-    <div className="container">
+    <div className={`container start ${fade2}`}>
       {isShowAd && (
         <div className="alert alert-warning">2초이내 구매시 할인</div>
       )}
@@ -64,6 +106,39 @@ const Detail = (props) => {
           <button className="btn btn-danger">주문하기</button>
         </div>
       </div>
+      <Nav variant="tabs" defaultActiveKey="link0">
+        <Nav.Item>
+          <Nav.Link
+            eventKey="link0"
+            onClick={() => {
+              setTab(0);
+            }}
+          >
+            버튼0
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="link1"
+            onClick={() => {
+              setTab(1);
+            }}
+          >
+            버튼1
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="link2"
+            onClick={() => {
+              setTab(2);
+            }}
+          >
+            버튼2
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+      <TabContent tab={tab} />
     </div>
   );
 };
